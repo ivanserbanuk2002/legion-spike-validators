@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "legion-spike-validators"
+version = "0.1.0"
+description = "Tiny amount-validation package distribution spike."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/legion_spike_validators"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
