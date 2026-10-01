@@ -6,3 +6,14 @@ Internal package-distribution spike; installation requires repository access.
 ```bash
 pip install "git+https://github.com/ivanserbanuk2002/legion-spike-validators.git#egg=legion-spike-validators"
 ```
+
+Helpers live in `legion_spike_validators.amounts`. `validate(12.5, "USD")`
+accepts finite positive Python `int`/`float` values (not booleans) and the
+currencies USD, EUR, GBP, UAH. `parse_amount("12.50 usd")` returns the frozen
+`CurrencyAmount(12.5, "USD")`; whitespace and currency case are normalised.
+Invalid values raise `InvalidAmount`. Values remain floats for this spike,
+not a claim of exact monetary arithmetic.
+
+Design reference: Mikko Ohtamaa's [finite-value JSON boundary fix](https://github.com/tradingstrategy-ai/web3-ethereum-defi/commit/382dbe6623bc79a6ed350139d3750ef75c09eb0b).
+That upstream export maps non-finite metadata to null; our required amounts
+reject it. This is an independent implementation of the boundary practice.
