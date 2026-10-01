@@ -18,6 +18,10 @@ not a claim of exact monetary arithmetic.
 must be an integer from 0 to 8. Standard Python numeric rounding is for display
 only: a small positive amount can display as `"0.00 USD"`.
 
+`sum_amounts([parse_amount("1 USD"), parse_amount("2 USD")])` returns
+`CurrencyAmount(3.0, "USD")`. It accepts iterables, uses `math.fsum`, and rejects
+empty input, mixed currencies, invalid items and numeric overflow.
+
 Design reference: Mikko Ohtamaa's [finite-value JSON boundary fix](https://github.com/tradingstrategy-ai/web3-ethereum-defi/commit/382dbe6623bc79a6ed350139d3750ef75c09eb0b).
 That upstream export maps non-finite metadata to null; our required amounts
 reject it. This is an independent implementation of the boundary practice.

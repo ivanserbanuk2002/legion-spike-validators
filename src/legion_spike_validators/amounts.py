@@ -1,4 +1,5 @@
 import math
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 
@@ -50,3 +51,28 @@ def format_amount(amount: CurrencyAmount, decimal_places: int = 2) -> str:
     if type(decimal_places) is not int or not 0 <= decimal_places <= 8:
         raise InvalidAmount("decimal_places must be an integer from 0 to 8")
     return f"{amount.value:.{decimal_places}f} {amount.currency}"
+
+
+def sum_amounts(amounts: Iterable[CurrencyAmount]) -> CurrencyAmount:
+    """Sum a nonempty collection of positive amounts in one currency."""
+    try:
+        iterator = iter(amounts)
+    except TypeError as exc:
+        raise InvalidAmount("expected an iterable of CurrencyAmount values") from exc
+    values = []
+    currency = None
+    for amount in iterator:
+        if not isinstance(amount, CurrencyAmount):
+            raise InvalidAmount("expected a CurrencyAmount")
+        validate(amount.value, amount.currency)
+        if currency is not None and amount.currency != currency:
+            raise InvalidAmount("cannot sum different currencies")
+        currency = amount.currency
+        values.append(amount.value)
+    if not values:
+        raise InvalidAmount("cannot sum an empty collection")
+    try:
+        total = math.fsum(values)
+    except OverflowError as exc:
+        raise InvalidAmount("amount sum exceeds the finite numeric range") from exc
+    return validate(total, currency)

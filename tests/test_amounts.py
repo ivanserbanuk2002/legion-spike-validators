@@ -74,3 +74,32 @@ def test_format_amount_rejects_invalid_precision(precision: object) -> None:
 def test_format_amount_revalidates_input(amount: object) -> None:
     with pytest.raises(InvalidAmount):
         amounts.format_amount(amount)
+
+
+def test_sum_amounts_accepts_a_generator_and_preserves_small_addends() -> None:
+    values = (CurrencyAmount(value, "USD") for value in [1e16, 1, 1])
+    assert amounts.sum_amounts(values) == CurrencyAmount(10000000000000002.0, "USD")
+
+
+def test_sum_amounts_accepts_one_item() -> None:
+    assert amounts.sum_amounts([CurrencyAmount(2.5, "UAH")]) == CurrencyAmount(2.5, "UAH")
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        [],
+        None,
+        1,
+        [None],
+        [CurrencyAmount(1, "USD"), CurrencyAmount(1, "EUR")],
+        [CurrencyAmount(1, "USD"), CurrencyAmount(float("nan"), "USD")],
+        [CurrencyAmount(0, "USD")],
+        [CurrencyAmount(True, "USD")],
+        [CurrencyAmount(1, "PLN")],
+        [CurrencyAmount(1e308, "USD"), CurrencyAmount(1e308, "USD")],
+    ],
+)
+def test_sum_amounts_rejects_invalid_collections(values: object) -> None:
+    with pytest.raises(InvalidAmount):
+        amounts.sum_amounts(values)
