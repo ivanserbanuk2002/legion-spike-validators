@@ -47,3 +47,30 @@ def test_parse_amount_normalises_currency(text: str, expected: CurrencyAmount) -
 def test_parse_amount_rejects_invalid_input(text: object) -> None:
     with pytest.raises(InvalidAmount):
         amounts.parse_amount(text)
+
+
+def test_format_amount_defaults_to_two_decimal_places() -> None:
+    assert amounts.format_amount(CurrencyAmount(12.5, "USD")) == "12.50 USD"
+
+
+@pytest.mark.parametrize(
+    ("value", "precision", "expected"),
+    [(12.6, 0, "13 EUR"), (1.25, 8, "1.25000000 EUR"), (0.001, 2, "0.00 EUR")],
+)
+def test_format_amount_uses_requested_display_precision(value: float, precision: int, expected: str) -> None:
+    assert amounts.format_amount(CurrencyAmount(value, "EUR"), precision) == expected
+
+
+@pytest.mark.parametrize("precision", [-1, 9, True, 2.0, "2", None])
+def test_format_amount_rejects_invalid_precision(precision: object) -> None:
+    with pytest.raises(InvalidAmount):
+        amounts.format_amount(CurrencyAmount(1, "USD"), precision)
+
+
+@pytest.mark.parametrize(
+    "amount",
+    [None, 1, {"value": 1, "currency": "USD"}, CurrencyAmount(float("nan"), "USD"), CurrencyAmount(0, "USD"), CurrencyAmount(1, "PLN")],
+)
+def test_format_amount_revalidates_input(amount: object) -> None:
+    with pytest.raises(InvalidAmount):
+        amounts.format_amount(amount)

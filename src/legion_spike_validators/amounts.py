@@ -40,3 +40,13 @@ def parse_amount(text: str) -> CurrencyAmount:
     except ValueError as exc:
         raise InvalidAmount("invalid amount number") from exc
     return validate(value, parts[1].upper())
+
+
+def format_amount(amount: CurrencyAmount, decimal_places: int = 2) -> str:
+    """Format a validated amount for display using 0 to 8 decimal places."""
+    if not isinstance(amount, CurrencyAmount):
+        raise InvalidAmount("expected a CurrencyAmount")
+    validate(amount.value, amount.currency)
+    if type(decimal_places) is not int or not 0 <= decimal_places <= 8:
+        raise InvalidAmount("decimal_places must be an integer from 0 to 8")
+    return f"{amount.value:.{decimal_places}f} {amount.currency}"
