@@ -103,3 +103,40 @@ def test_sum_amounts_accepts_one_item() -> None:
 def test_sum_amounts_rejects_invalid_collections(values: object) -> None:
     with pytest.raises(InvalidAmount):
         amounts.sum_amounts(values)
+
+
+def test_convert_amount_uses_explicit_target_units_per_source_unit() -> None:
+    source = CurrencyAmount(12.5, "USD")
+    assert amounts.convert_amount(source, "EUR", 0.8) == CurrencyAmount(10.0, "EUR")
+    assert source == CurrencyAmount(12.5, "USD")
+
+
+def test_convert_amount_accepts_unit_rate() -> None:
+    assert amounts.convert_amount(CurrencyAmount(10, "GBP"), "UAH", 1) == CurrencyAmount(10, "UAH")
+
+
+@pytest.mark.parametrize("rate", [0, -1, float("nan"), float("inf"), -float("inf"), True, "0.8", None])
+def test_convert_amount_rejects_invalid_rate(rate: object) -> None:
+    with pytest.raises(InvalidAmount):
+        amounts.convert_amount(CurrencyAmount(10, "USD"), "EUR", rate)
+
+
+@pytest.mark.parametrize("target", ["PLN", "eur", None, 1])
+def test_convert_amount_rejects_invalid_target_currency(target: object) -> None:
+    with pytest.raises(InvalidAmount):
+        amounts.convert_amount(CurrencyAmount(10, "USD"), target, 0.8)
+
+
+@pytest.mark.parametrize(
+    "source",
+    [None, 10, CurrencyAmount(0, "USD"), CurrencyAmount(float("inf"), "USD"), CurrencyAmount(10, "PLN")],
+)
+def test_convert_amount_revalidates_source(source: object) -> None:
+    with pytest.raises(InvalidAmount):
+        amounts.convert_amount(source, "EUR", 0.8)
+
+
+@pytest.mark.parametrize(("value", "rate"), [(1e308, 2), (1e-300, 1e-300)])
+def test_convert_amount_rejects_overflow_and_underflow(value: float, rate: float) -> None:
+    with pytest.raises(InvalidAmount):
+        amounts.convert_amount(CurrencyAmount(value, "USD"), "EUR", rate)

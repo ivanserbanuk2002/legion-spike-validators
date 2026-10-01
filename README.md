@@ -22,6 +22,12 @@ only: a small positive amount can display as `"0.00 USD"`.
 `CurrencyAmount(3.0, "USD")`. It accepts iterables, uses `math.fsum`, and rejects
 empty input, mixed currencies, invalid items and numeric overflow.
 
+`convert_amount(parse_amount("12.50 USD"), "EUR", rate=0.8)` returns
+`CurrencyAmount(10.0, "EUR")`. The caller supplies a finite positive rate in
+target units per source unit; there is no exchange-rate lookup. Source and
+target currencies must be supported uppercase codes. Invalid rates, overflow
+and a result that underflows to zero raise `InvalidAmount`.
+
 Design reference: Mikko Ohtamaa's [finite-value JSON boundary fix](https://github.com/tradingstrategy-ai/web3-ethereum-defi/commit/382dbe6623bc79a6ed350139d3750ef75c09eb0b).
 That upstream export maps non-finite metadata to null; our required amounts
 reject it. This is an independent implementation of the boundary practice.

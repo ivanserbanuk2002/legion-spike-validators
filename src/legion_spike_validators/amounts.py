@@ -76,3 +76,12 @@ def sum_amounts(amounts: Iterable[CurrencyAmount]) -> CurrencyAmount:
     except OverflowError as exc:
         raise InvalidAmount("amount sum exceeds the finite numeric range") from exc
     return validate(total, currency)
+
+
+def convert_amount(amount: CurrencyAmount, target_currency: str, rate: float) -> CurrencyAmount:
+    """Multiply by a caller-provided rate in target units per source unit."""
+    if not isinstance(amount, CurrencyAmount):
+        raise InvalidAmount("expected a CurrencyAmount")
+    validate(amount.value, amount.currency)
+    validate(rate, target_currency)
+    return validate(amount.value * rate, target_currency)
