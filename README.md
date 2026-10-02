@@ -38,3 +38,6 @@ validated positive remainder. Zero, negative and mixed-currency results raise `I
 `split_amount(amount, parts)` returns an immutable tuple of 1–1000 equal parts.
 It divides floats without cent rounding; recombining may have floating-point error.
 A result underflowing to zero is rejected.
+
+`compare_amounts(left, right)` returns -1, 0 or 1 for matching currencies.
+It compares the stored numeric values directly, without an approximate-equality tolerance.

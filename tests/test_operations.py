@@ -26,3 +26,17 @@ def test_split_returns_equal_immutable_parts():
 def test_split_rejects_invalid_part_counts(parts):
     with pytest.raises(amounts.InvalidAmount):
         amounts.split_amount(amounts.parse_amount("1 EUR"), parts)
+
+
+@pytest.mark.parametrize("left,right,expected", [(1, 2, -1), (2, 2, 0), (3, 2, 1)])
+def test_compare_same_currency_values(left, right, expected):
+    assert amounts.compare_amounts(amounts.validate(left, "USD"),
+                                   amounts.validate(right, "USD")) == expected
+
+
+def test_compare_rejects_mixed_currency_and_invalid_objects():
+    for left, right in [(amounts.validate(1, "USD"), amounts.validate(1, "EUR")),
+                        (None, amounts.validate(1, "USD")),
+                        (amounts.CurrencyAmount(float("nan"), "USD"), amounts.validate(1, "USD"))]:
+        with pytest.raises(amounts.InvalidAmount):
+            amounts.compare_amounts(left, right)

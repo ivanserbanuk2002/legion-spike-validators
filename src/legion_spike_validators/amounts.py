@@ -107,3 +107,14 @@ def split_amount(amount: CurrencyAmount, parts: int) -> tuple[CurrencyAmount, ..
         raise InvalidAmount("parts must be an integer from 1 to 1000")
     part = validate(amount.value / parts, amount.currency)
     return (part,) * parts
+
+
+def compare_amounts(left: CurrencyAmount, right: CurrencyAmount) -> int:
+    """Return -1, 0 or 1 for validated values in the same currency."""
+    if not isinstance(left, CurrencyAmount) or not isinstance(right, CurrencyAmount):
+        raise InvalidAmount("expected CurrencyAmount values")
+    validate(left.value, left.currency)
+    validate(right.value, right.currency)
+    if left.currency != right.currency:
+        raise InvalidAmount("cannot compare different currencies")
+    return (left.value > right.value) - (left.value < right.value)
