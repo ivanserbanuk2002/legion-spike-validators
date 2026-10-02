@@ -34,3 +34,7 @@ reject it. This is an independent implementation of the boundary practice.
 
 `subtract_amounts(left, right)` requires matching currencies and returns a
 validated positive remainder. Zero, negative and mixed-currency results raise `InvalidAmount`.
+
+`split_amount(amount, parts)` returns an immutable tuple of 1–1000 equal parts.
+It divides floats without cent rounding; recombining may have floating-point error.
+A result underflowing to zero is rejected.

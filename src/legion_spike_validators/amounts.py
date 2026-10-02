@@ -96,3 +96,14 @@ def subtract_amounts(left: CurrencyAmount, right: CurrencyAmount) -> CurrencyAmo
     if left.currency != right.currency:
         raise InvalidAmount("cannot subtract different currencies")
     return validate(left.value - right.value, left.currency)
+
+
+def split_amount(amount: CurrencyAmount, parts: int) -> tuple[CurrencyAmount, ...]:
+    """Split into 1 to 1000 equal float-valued parts without monetary rounding."""
+    if not isinstance(amount, CurrencyAmount):
+        raise InvalidAmount("expected a CurrencyAmount")
+    validate(amount.value, amount.currency)
+    if type(parts) is not int or not 1 <= parts <= 1000:
+        raise InvalidAmount("parts must be an integer from 1 to 1000")
+    part = validate(amount.value / parts, amount.currency)
+    return (part,) * parts
