@@ -31,3 +31,6 @@ and a result that underflows to zero raise `InvalidAmount`.
 Design reference: Mikko Ohtamaa's [finite-value JSON boundary fix](https://github.com/tradingstrategy-ai/web3-ethereum-defi/commit/382dbe6623bc79a6ed350139d3750ef75c09eb0b).
 That upstream export maps non-finite metadata to null; our required amounts
 reject it. This is an independent implementation of the boundary practice.
+
+`subtract_amounts(left, right)` requires matching currencies and returns a
+validated positive remainder. Zero, negative and mixed-currency results raise `InvalidAmount`.

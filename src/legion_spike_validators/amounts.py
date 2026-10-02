@@ -85,3 +85,14 @@ def convert_amount(amount: CurrencyAmount, target_currency: str, rate: float) ->
     validate(amount.value, amount.currency)
     validate(rate, target_currency)
     return validate(amount.value * rate, target_currency)
+
+
+def subtract_amounts(left: CurrencyAmount, right: CurrencyAmount) -> CurrencyAmount:
+    """Subtract same-currency amounts; the remainder must stay positive."""
+    if not isinstance(left, CurrencyAmount) or not isinstance(right, CurrencyAmount):
+        raise InvalidAmount("expected CurrencyAmount values")
+    validate(left.value, left.currency)
+    validate(right.value, right.currency)
+    if left.currency != right.currency:
+        raise InvalidAmount("cannot subtract different currencies")
+    return validate(left.value - right.value, left.currency)
